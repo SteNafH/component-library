@@ -9,7 +9,7 @@ import {
 type Viewport = 'web-mobile' | 'web-desktop';
 
 const getViewport = () => {
-    return window.innerWidth < 1200 ? 'web-mobile' : 'web-desktop';
+    return window.innerWidth < 1180 ? 'web-mobile' : 'web-desktop';
 };
 
 const ViewportContext = createContext<Viewport>(getViewport());
