@@ -1,0 +1,45 @@
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: override release tag
+        required: false
+  push:
+    branches: ['main']
+
+jobs:
+  test-and-publish:
+    name: Test & Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+      - name: Run Tests
+        run: pnpm run test:ci
+      - name: Publish
+        run: |
+          git config --global user.name 'Stefan Hilhorst'
+          git config --global user.email 'stefanhilhorst@users.noreply.github.com'
+          npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+          pnpm run cipublish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TAG: ${{ inputs.tag }}
