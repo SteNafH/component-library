@@ -12,6 +12,7 @@ on:
 jobs:
   test-and-publish:
     name: Test & Publish
+    if: github.repository == 'SteNafH/component-library'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
